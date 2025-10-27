@@ -15,8 +15,7 @@ permissions:
 
 jobs:
   test:
-    runs-on:
-      - codebuild-github-actions-practice-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: ubuntu-latest
     environment: test
     strategy:
       matrix:
@@ -83,8 +82,8 @@ jobs:
         pip install twine
 
         # Get CodeArtifact credentials
-        export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain zabalytics --query authorizationToken --output text --region us-west-2)
-        export CODEARTIFACT_REPOSITORY_URL=$(aws codeartifact get-repository-endpoint --domain zabalytics --repository pypi --format pypi --query repositoryEndpoint --output text --region us-west-2)
+        export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain joshliddell --query authorizationToken --output text --region us-west-1)
+        export CODEARTIFACT_REPOSITORY_URL=$(aws codeartifact get-repository-endpoint --domain joshliddell --repository pypi --format pypi --query repositoryEndpoint --output text --region us-west-1)
 
         echo "CODEARTIFACT_AUTH_TOKEN=$CODEARTIFACT_AUTH_TOKEN" >> $GITHUB_ENV
         echo "CODEARTIFACT_REPOSITORY_URL=$CODEARTIFACT_REPOSITORY_URL" >> $GITHUB_ENV
@@ -94,12 +93,12 @@ jobs:
       run: |
         # Delete existing package (ignore if it doesn't exist)
         aws codeartifact delete-package-versions \
-          --domain zabalytics \
-          --repository pypi \
+          --domain joshliddell \
+          --repository josh-demo-is3600 \
           --format pypi \
           --package file-encoder \
           --versions 0.1.0 \
-          --region us-west-2 || true
+          --region us-west-1 || true
 
         # Upload the package
         twine upload --repository-url $CODEARTIFACT_REPOSITORY_URL \
